@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import '../constants/routes.dart';
+import '../dialogs/error_dialog.dart';
 import '../firebase_options.dart';
 import 'dart:developer' as devtools show log;
 
@@ -89,29 +91,31 @@ class _RegisterViewState extends State<RegisterView> {
                           devtools.log(userCredential.toString());
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
-                            devtools.log('Choose a stronger password');
+                            // devtools.log('Choose a stronger password');
+                            await showErrorDialog(
+                                context, 'Choose a stronger password');
                           } else if (e.code == 'email-already-in-use') {
                             devtools.log(e.code);
-                            Fluttertoast.showToast(
-                                msg: 'User already exists',
-                                toastLength: Toast.LENGTH_SHORT,
-                                gravity: ToastGravity.BOTTOM,
-                                timeInSecForIosWeb: 1,
-                                backgroundColor: Colors.green,
-                                textColor: Colors.white);
+                            await showErrorDialog(
+                                context, 'User already exists');
                           } else if (e.code == 'invalid-email') {
-                            devtools.log('This is an invalid email address');
+                            // devtools.log('This is an invalid email address');
+                            await showErrorDialog(
+                                context, 'Invalid email address');
                           } else {
-                            devtools.log('Some other error occured');
-                            devtools.log(e.code);
+                            // devtools.log('Some other error occured');
+                            // devtools.log(e.code);
+                            await showErrorDialog(context, 'Error- ${e.code}');
                           }
+                        } catch (e) {
+                          await showErrorDialog(context, e.toString());
                         }
                       },
                       child: const Text('Register')),
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/login/', (route) => false);
+                            loginRoute, (route) => false);
                       },
                       child: const Text('Already registered? Login here!'))
                 ],
