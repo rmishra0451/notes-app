@@ -1,10 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import '../firebase_options.dart';
+import 'dart:developer' as devtools show log;
 
 class RegisterView extends StatefulWidget {
   const RegisterView({Key? key}) : super(key: key);
@@ -87,12 +86,12 @@ class _RegisterViewState extends State<RegisterView> {
                           final userCredential = await FirebaseAuth.instance
                               .createUserWithEmailAndPassword(
                                   email: email, password: password);
-                          print(userCredential);
+                          devtools.log(userCredential.toString());
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
-                            print('Choose a stronger password');
+                            devtools.log('Choose a stronger password');
                           } else if (e.code == 'email-already-in-use') {
-                            print(e.code);
+                            devtools.log(e.code);
                             Fluttertoast.showToast(
                                 msg: 'User already exists',
                                 toastLength: Toast.LENGTH_SHORT,
@@ -101,10 +100,10 @@ class _RegisterViewState extends State<RegisterView> {
                                 backgroundColor: Colors.green,
                                 textColor: Colors.white);
                           } else if (e.code == 'invalid-email') {
-                            print('This is an invalid email address');
+                            devtools.log('This is an invalid email address');
                           } else {
-                            print('Some other error occured');
-                            print(e.code);
+                            devtools.log('Some other error occured');
+                            devtools.log(e.code);
                           }
                         }
                       },
