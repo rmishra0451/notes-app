@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/routes.dart';
+import '../dialogs/logout_dialog.dart';
 import '../main.dart';
 
 class NotesView extends StatefulWidget {
@@ -25,6 +26,8 @@ class _NotesViewState extends State<NotesView> {
                   final shouldLogout = await showLogOutDialog(context);
                   if (shouldLogout) {
                     await FirebaseAuth.instance.signOut();
+                    final user = FirebaseAuth.instance.currentUser;
+                    user?.sendEmailVerification();
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil(loginRoute, (_) => false);
                   }

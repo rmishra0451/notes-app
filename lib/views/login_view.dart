@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'dart:developer' as devtools show log;
 import 'package:flutter/material.dart';
 import 'package:mynotes/constants/routes.dart';
-
 import '../dialogs/error_dialog.dart';
 import '../firebase_options.dart';
 
@@ -90,11 +88,19 @@ class _LoginViewState extends State<LoginView> {
                             email: email,
                             password: password,
                           );
+                          final user = FirebaseAuth.instance.currentUser;
                           // devtools.log(userCredential.toString());
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            notesRoute,
-                            (route) => false,
-                          );
+                          if (user?.emailVerified == true) {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              notesRoute,
+                              (route) => false,
+                            );
+                          } else {
+                            Navigator.of(context).pushNamedAndRemoveUntil(
+                              verifyEmailRoute,
+                              (route) => false,
+                            );
+                          }
                         }
                         /* 
                         //CATCH ALL ERRORs BLOCK

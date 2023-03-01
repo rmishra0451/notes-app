@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../constants/routes.dart';
 import '../dialogs/error_dialog.dart';
 import '../firebase_options.dart';
@@ -85,10 +84,13 @@ class _RegisterViewState extends State<RegisterView> {
                         final password = _password.text;
 
                         try {
-                          final userCredential = await FirebaseAuth.instance
+                          await FirebaseAuth.instance
                               .createUserWithEmailAndPassword(
                                   email: email, password: password);
-                          devtools.log(userCredential.toString());
+                          // devtools.log(userCredential.toString());
+                          final user = FirebaseAuth.instance.currentUser;
+                          await user?.sendEmailVerification();
+                          Navigator.of(context).pushNamed(verifyEmailRoute);
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
                             // devtools.log('Choose a stronger password');
