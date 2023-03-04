@@ -6,7 +6,7 @@ import 'package:mynotes/notes/notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
 
-import 'notes/new_notes_view.dart';
+import 'notes/new_note_view.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +21,7 @@ void main() {
       registerRoute: (context) => (const RegisterView()),
       notesRoute: (context) => (const NotesView()),
       verifyEmailRoute: (context) => (const VerifyEmailView()),
-      newNotesRoute: (context) => (const NewNotesView())
+      newNoteRoute: (context) => (const NewNoteView())
     },
   ));
 }

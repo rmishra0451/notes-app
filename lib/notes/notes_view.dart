@@ -25,17 +25,10 @@ class _NotesViewState extends State<NotesView> {
   }
 
   @override
-  void dispose() {
-    _notesService = NotesService();
-    _notesService.close();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Main UI'),
+          title: const Text('Your Notes'),
           actions: [
             PopupMenuButton<MenuAction>(
               onSelected: (value) async {
@@ -69,13 +62,30 @@ class _NotesViewState extends State<NotesView> {
                         builder: (context, snapshot) {
                           switch (snapshot.connectionState) {
                             case ConnectionState.waiting:
+                              return const CircularProgressIndicator.adaptive();
                             case ConnectionState.active:
-                              return const Text('Add your first note...',
-                                  // textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 35,
-                                      color: Colors.black12));
+                              if (snapshot.hasData) {
+                                final allNotes =
+                                    snapshot.data as List<DatabaseNote>;
+                                return ListView.builder(
+                                  itemCount: allNotes.length,
+                                  itemBuilder: (context, index) {
+                                    final note = allNotes[index];
+                                    return ListTile(
+                                      title: Text(
+                                        note.text,
+                                        maxLines: 1,
+                                        softWrap: true,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      selectedColor: Colors.amber,
+                                    );
+                                  },
+                                );
+                              } else {
+                                return const CircularProgressIndicator
+                                    .adaptive();
+                              }
                             default:
                               return const CircularProgressIndicator.adaptive();
                           }
@@ -88,7 +98,7 @@ class _NotesViewState extends State<NotesView> {
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
-            Navigator.of(context).pushNamed(newNotesRoute);
+            Navigator.of(context).pushNamed(newNoteRoute);
           },
           label: const Text('Add Note'),
           icon: const Icon(Icons.add),

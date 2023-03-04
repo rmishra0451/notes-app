@@ -135,7 +135,7 @@ class MockAuthProvider implements AuthProvider {
   Future<void> sendEmailVerification() async {
     if (!_isInitialised) throw NotInitialisedException();
     final user = _user;
-    if (_user == null) throw UsernotLoggedInAuthException();
+    if (user == null) throw UsernotLoggedInAuthException();
     const newUser = AuthUser(isEmailVerified: true, email: 'foo@bar.com');
     _user = newUser;
   }

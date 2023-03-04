@@ -34,42 +34,68 @@ class _RegisterViewState extends State<RegisterView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Register'),
-        ),
         body: Column(
-          children: [
-            TextField(
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              enableSuggestions: false,
-              decoration: const InputDecoration(
-                  labelText: 'Email',
-                  hintText: 'Enter your email here',
-                  prefixIcon: Icon(Icons.email_outlined),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1),
-                  )),
-              controller: _email,
-            ),
-            TextField(
-              autocorrect: false,
-              enableSuggestions: false,
-              obscureText: true,
-              decoration: const InputDecoration(
-                  labelText: 'Password',
-                  hintText: 'Enter your password here',
-                  prefixIcon: Icon(Icons.lock),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 1),
-                  )),
-              controller: _password,
-            ),
-            TextButton(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: 150,
+          child: Image.asset('assets/logo.png'),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Sign In',
+            style: TextStyle(
+                fontSize: 25,
+                fontWeight: FontWeight.w500,
+                color: Colors.black54),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            autocorrect: false,
+            keyboardType: TextInputType.emailAddress,
+            enableSuggestions: false,
+            decoration: const InputDecoration(
+                labelText: 'Email',
+                hintText: 'Enter your email here',
+                prefixIcon: Icon(Icons.email_outlined),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 1),
+                )),
+            controller: _email,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: TextField(
+            autocorrect: false,
+            enableSuggestions: false,
+            obscureText: true,
+            decoration: const InputDecoration(
+                labelText: 'Password',
+                hintText: 'Enter your password here',
+                prefixIcon: Icon(Icons.lock),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 1),
+                )),
+            controller: _password,
+          ),
+        ),
+        SizedBox(
+          width: 300,
+          height: 60,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextButton(
                 style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.pink,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.all(10)),
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.all(10),
+                  textStyle: const TextStyle(fontSize: 15),
+                ),
                 onPressed: () async {
                   final email = _email.text;
                   final password = _password.text;
@@ -93,13 +119,18 @@ class _RegisterViewState extends State<RegisterView> {
                   }
                 },
                 child: const Text('Register')),
-            TextButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil(loginRoute, (route) => false);
-                },
-                child: const Text('Already registered? Login here!'))
-          ],
-        ));
+          ),
+        ),
+        TextButton(
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+            },
+            child: const Text(
+              'Already registered? Login here!',
+              style: TextStyle(color: Colors.black54),
+            ))
+      ],
+    ));
   }
 }
