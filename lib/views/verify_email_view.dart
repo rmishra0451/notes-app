@@ -29,8 +29,9 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
           ),
           TextButton(
               onPressed: () async {
+                final navigator = Navigator.of(context);
                 await AuthService.firebase().logOut();
-                Navigator.of(context).pushNamedAndRemoveUntil(
+                navigator.pushNamedAndRemoveUntil(
                   loginRoute,
                   (route) => false,
                 );

@@ -101,17 +101,18 @@ class _LoginViewState extends State<LoginView> {
                   final password = _password.text;
 
                   try {
+                    final navigator = Navigator.of(context);
                     await AuthService.firebase()
                         .logIn(email: email, password: password);
                     final user = AuthService.firebase().currentUser;
                     // devtools.log(userCredential.toString());
                     if (user?.isEmailVerified == true) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
+                      navigator.pushNamedAndRemoveUntil(
                         notesRoute,
                         (route) => false,
                       );
                     } else {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
+                      navigator.pushNamedAndRemoveUntil(
                         verifyEmailRoute,
                         (route) => false,
                       );
@@ -137,14 +138,27 @@ class _LoginViewState extends State<LoginView> {
           ),
         ),
         TextButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(registerRoute, (route) => false);
-            },
-            child: const Text(
+          onPressed: () {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(registerRoute, (route) => false);
+          },
+          /*child: const Text(
               'Not registered yet? Register here!',
               style: TextStyle(color: Colors.black54),
-            ))
+            )*/
+          child: RichText(
+            text: const TextSpan(
+                style: TextStyle(fontSize: 15),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: 'Not registered yet?',
+                      style: TextStyle(color: Colors.black54)),
+                  TextSpan(
+                      text: ' Register here!',
+                      style: TextStyle(color: Colors.green))
+                ]),
+          ),
+        )
       ],
     ));
   }

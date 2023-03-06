@@ -99,6 +99,7 @@ class _RegisterViewState extends State<RegisterView> {
                 onPressed: () async {
                   final email = _email.text;
                   final password = _password.text;
+                  final navigator = Navigator.of(context);
 
                   try {
                     await AuthService.firebase().createUser(
@@ -106,7 +107,7 @@ class _RegisterViewState extends State<RegisterView> {
                       password: password,
                     );
                     await AuthService.firebase().sendEmailVerification();
-                    Navigator.of(context).pushNamed(verifyEmailRoute);
+                    navigator.pushNamed(verifyEmailRoute);
                   } on WeakPasswordAuthException {
                     await showErrorDialog(
                         context, 'Choose a stronger password');
@@ -122,14 +123,27 @@ class _RegisterViewState extends State<RegisterView> {
           ),
         ),
         TextButton(
-            onPressed: () {
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil(loginRoute, (route) => false);
-            },
-            child: const Text(
+          onPressed: () {
+            Navigator.of(context)
+                .pushNamedAndRemoveUntil(loginRoute, (route) => false);
+          },
+          /* child: const Text(
               'Already registered? Login here!',
               style: TextStyle(color: Colors.black54),
-            ))
+            )*/
+          child: RichText(
+            text: const TextSpan(
+                style: TextStyle(fontSize: 15),
+                children: <TextSpan>[
+                  TextSpan(
+                      text: 'Already registered?',
+                      style: TextStyle(color: Colors.black54)),
+                  TextSpan(
+                      text: ' Login here!',
+                      style: TextStyle(color: Colors.green))
+                ]),
+          ),
+        )
       ],
     ));
   }
