@@ -3,7 +3,7 @@ import 'package:mynotes/notes/notes_list_view.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/crud/notes_service.dart';
 import '../constants/routes.dart';
-import '../dialogs/logout_dialog.dart';
+import '../utilities/dialogs/logout_dialog.dart';
 import '../enums/menu_actions.dart';
 
 class NotesView extends StatefulWidget {
@@ -57,41 +57,58 @@ class _NotesViewState extends State<NotesView> {
             )
           ],
         ),
-        body: Center(
-          child: (FutureBuilder(
-              future: _notesService.getOrCreateUser(email: userEmail),
-              builder: (context, snapshot) {
-                switch (snapshot.connectionState) {
-                  case ConnectionState.done:
-                    return StreamBuilder(
-                        stream: _notesService.allNotes,
-                        builder: (context, snapshot) {
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.waiting:
-                              return const CircularProgressIndicator.adaptive();
-                            case ConnectionState.active:
-                              if (snapshot.hasData) {
-                                final allNotes =
-                                    snapshot.data as List<DatabaseNote>;
-                                return NotesListView(
-                                  notes: allNotes,
-                                  onDeleteNote: (note) async {
-                                    await _notesService.deleteNote(id: note.id);
-                                  },
-                                );
-                              } else {
+        body: Container(
+          decoration: const BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage('assets/bgImage.png'),
+                  fit: BoxFit.cover,
+                  opacity: 0.05)),
+          child: Center(
+            child: (FutureBuilder(
+                future: _notesService.getOrCreateUser(email: userEmail),
+                builder: (context, snapshot) {
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.done:
+                      return StreamBuilder(
+                          stream: _notesService.allNotes,
+                          builder: (context, snapshot) {
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.waiting:
                                 return const CircularProgressIndicator
                                     .adaptive();
-                              }
-                            default:
-                              return const CircularProgressIndicator.adaptive();
-                          }
-                        });
+                              case ConnectionState.active:
+                                if (snapshot.hasData) {
+                                  final navigator = Navigator.of(context);
+                                  final allNotes =
+                                      snapshot.data as List<DatabaseNote>;
+                                  return NotesListView(
+                                    notes: allNotes,
+                                    onDeleteNote: (note) async {
+                                      await _notesService.deleteNote(
+                                          id: note.id);
+                                    },
+                                    onTap: (note) {
+                                      navigator.pushNamed(
+                                        newNoteRoute,
+                                        arguments: note,
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  return const CircularProgressIndicator
+                                      .adaptive();
+                                }
+                              default:
+                                return const CircularProgressIndicator
+                                    .adaptive();
+                            }
+                          });
 
-                  default:
-                    return const CircularProgressIndicator.adaptive();
-                }
-              })),
+                    default:
+                      return const CircularProgressIndicator.adaptive();
+                  }
+                })),
+          ),
         ),
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {

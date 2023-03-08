@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/services/auth/auth_service.dart';
 import 'package:mynotes/services/crud/notes_service.dart';
+import 'package:mynotes/utilities/Generics/get_arguments.dart';
 
 class NewNoteView extends StatefulWidget {
   const NewNoteView({Key? key}) : super(key: key);
@@ -38,7 +39,15 @@ class _NewNoteViewState extends State<NewNoteView> {
     _textController.addListener(_textControllerListener);
   }
 
-  Future<DatabaseNote> createNewNote() async {
+  Future<DatabaseNote> createOrGetExistingNote(BuildContext context) async {
+    final widgetNote = context.getArgument<DatabaseNote>();
+
+    if (widgetNote != null) {
+      _note = widgetNote;
+      _textController.text = widgetNote.text;
+      return widgetNote;
+    }
+
     final existingNote = _note;
     if (existingNote != null) {
       return existingNote;
@@ -46,7 +55,9 @@ class _NewNoteViewState extends State<NewNoteView> {
     final currentUser = AuthService.firebase().currentUser!;
     final email = currentUser.email!;
     final owner = await _notesService.getUser(email: email);
-    return await _notesService.createNote(owner: owner);
+    final newNote = await _notesService.createNote(owner: owner);
+    _note = newNote;
+    return newNote;
   }
 
   void _deleteNoteIfTextIsEmpty() {
@@ -67,7 +78,7 @@ class _NewNoteViewState extends State<NewNoteView> {
     final note = _note;
     final text = _textController.text;
     if (note != null && text.isNotEmpty) {
-      final newNote = await _notesService.updateNote(
+      await _notesService.updateNote(
         note: note,
         text: text,
       );
@@ -88,68 +99,76 @@ class _NewNoteViewState extends State<NewNoteView> {
       appBar: AppBar(
         title: const Text('New Note'),
       ),
-      body: Column(
-        children: [
-          const Spacer(),
-          FutureBuilder(
-            future: createNewNote(),
-            builder: (context, snapshot) {
-              switch (snapshot.connectionState) {
-                case ConnectionState.done:
-                  _note = snapshot.data as DatabaseNote;
-                  _setupTextControllerListener();
-                  return Padding(
-                    padding: const EdgeInsets.only(right: 5.0, left: 5.0),
-                    child: TextField(
-                      controller: _textController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      decoration: const InputDecoration(
-                          hintText: 'Start tying your note here....',
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(width: 3, color: Colors.greenAccent),
-                          )),
-                    ),
-                  );
-                default:
-                  return const CircularProgressIndicator.adaptive();
-              }
-            },
-          ),
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FloatingActionButton.extended(
-                  onPressed: () {
-                    _saveNoteIfTextNotEmpty();
-                    Navigator.of(context).pop();
-                  },
-                  label: const Text('Save'),
-                  icon: const Icon(Icons.save_alt),
-                  backgroundColor: Colors.greenAccent,
-                  heroTag: 'btn1',
+      body: Container(
+        decoration: const BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage('assets/bgImage.png'),
+                fit: BoxFit.cover,
+                opacity: 0.05)),
+        child: Column(
+          children: [
+            const Spacer(),
+            FutureBuilder(
+              future: createOrGetExistingNote(context),
+              builder: (context, snapshot) {
+                switch (snapshot.connectionState) {
+                  case ConnectionState.done:
+                    _setupTextControllerListener();
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 5.0, left: 5.0),
+                      child: TextField(
+                        controller: _textController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                        decoration: const InputDecoration(
+                            hintText: 'Start tying your note here....',
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                  width: 3, color: Colors.greenAccent),
+                            )),
+                      ),
+                    );
+                  default:
+                    return const CircularProgressIndicator.adaptive();
+                }
+              },
+            ),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: FloatingActionButton.extended(
+                    onPressed: () {
+                      _saveNoteIfTextNotEmpty();
+                      Navigator.of(context).pop();
+                    },
+                    label: const Text('Save'),
+                    icon: const Icon(Icons.save_alt),
+                    backgroundColor: Colors.green,
+                    heroTag: 'btn1',
+                    elevation: 0,
+                  ),
                 ),
-              ),
-              const Spacer(),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: FloatingActionButton.extended(
-                  onPressed: () {
-                    deleteNote();
-                    Navigator.of(context).pop();
-                  },
-                  label: const Text('Discard'),
-                  icon: const Icon(Icons.delete),
-                  backgroundColor: Colors.pink,
-                  heroTag: 'btn2',
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: FloatingActionButton.extended(
+                    onPressed: () {
+                      deleteNote();
+                      Navigator.of(context).pop();
+                    },
+                    label: const Text('Discard'),
+                    icon: const Icon(Icons.delete),
+                    backgroundColor: Colors.pink,
+                    heroTag: 'btn2',
+                    elevation: 0,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const Spacer(),
-        ],
+              ],
+            ),
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }
