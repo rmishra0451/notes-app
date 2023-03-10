@@ -54,7 +54,7 @@ class NotesListView extends StatelessWidget {
                           color: Colors.yellow[600],
                         ),
                         child: IconButton(
-                          icon: const Icon(Icons.change_circle_outlined),
+                          icon: const Icon(Icons.edit_note),
                           color: Colors.black54,
                           onPressed: () {
                             onTap(note);
