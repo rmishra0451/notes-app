@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mynotes/services/crud/notes_service.dart';
-
+import 'package:mynotes/services/cloud/cloud_note.dart';
 import '../utilities/dialogs/delete_dialog.dart';
 
-typedef NoteCallback = void Function(DatabaseNote note);
+typedef NoteCallback = void Function(CloudNote note);
 
 class NotesListView extends StatelessWidget {
-  final List<DatabaseNote> notes;
+  final Iterable<CloudNote> notes;
   final NoteCallback onDeleteNote;
   final NoteCallback onTap;
 
@@ -22,7 +21,7 @@ class NotesListView extends StatelessWidget {
     return ListView.builder(
       itemCount: notes.length,
       itemBuilder: (context, index) {
-        final note = notes[index];
+        final note = notes.elementAt(index);
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
@@ -42,22 +41,45 @@ class NotesListView extends StatelessWidget {
               onTap: () {
                 onTap(note);
               },
-              selectedColor: Colors.amber,
-              trailing: Container(
-                height: 40.0,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.red[400],
-                ),
-                child: IconButton(
-                  icon: const Icon(Icons.delete_sweep_outlined),
-                  color: Colors.black54,
-                  onPressed: () async {
-                    final shouldDelete = await showDeleteDialog(context);
-                    if (shouldDelete) {
-                      onDeleteNote(note);
-                    }
-                  },
+              trailing: SizedBox(
+                width: 99.0,
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 3.0),
+                      child: Container(
+                        height: 40.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: Colors.yellow[600],
+                        ),
+                        child: IconButton(
+                          icon: const Icon(Icons.change_circle_outlined),
+                          color: Colors.black54,
+                          onPressed: () {
+                            onTap(note);
+                          },
+                        ),
+                      ),
+                    ),
+                    Container(
+                      height: 40.0,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.red[400],
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.delete_sweep_outlined),
+                        color: Colors.black54,
+                        onPressed: () async {
+                          final shouldDelete = await showDeleteDialog(context);
+                          if (shouldDelete) {
+                            onDeleteNote(note);
+                          }
+                        },
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),
